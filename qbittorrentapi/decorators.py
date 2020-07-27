@@ -2,13 +2,15 @@ import logging
 from functools import wraps
 from json import loads
 
-from qbittorrentapi.exceptions import *
+from qbittorrentapi.exceptions import APIError
+from qbittorrentapi.exceptions import HTTP403Error
 from qbittorrentapi.helpers import is_version_less_than
 
 logger = logging.getLogger(__name__)
 
 
 class Alias(object):
+
     """
     Alias class that can be used as a decorator for making methods callable
     through other names (or "aliases").
@@ -57,7 +59,7 @@ def aliased(aliased_class):
         i.coolMethod() # equivalent to i.myKinkyMethod() and i.boring_method()
     """
     original_methods = aliased_class.__dict__.copy()
-    for name, method in original_methods.items():
+    for method in original_methods.values():
         if hasattr(method, '_aliases'):
             # Add the aliases for 'method', but don't override any
             # previously-defined attribute of 'aliased_class'
@@ -112,6 +114,7 @@ def response_text(response_class):
 
 
 def response_json(response_class):
+
     """
     Return the JSON in the API response. JSON is parsed as instance of response_class.
 
@@ -168,11 +171,15 @@ def version_implemented(version_introduced, endpoint, end_point_params=None):
                         parameters_list = [end_point_params]
                     # each tuple should be ('python param name', 'api param name')
                     for parameter, api_parameter in [t for t in parameters_list if t[0] in kwargs]:
+                        if kwargs[parameter] is None:
+                            continue
                         error_message = 'WARNING: Parameter "%s (%s)" for endpoint "%s" is Not Implemented. ' \
                                         'Web API v%s is installed. This endpoint parameter is available starting ' \
                                         'in Web API v%s.' \
                                         % (api_parameter, parameter, endpoint, current_version, version_introduced)
                         logger.debug(error_message)
+                        if obj._RAISE_UNIMPLEMENTEDERROR_FOR_UNIMPLEMENTED_API_ENDPOINTS:
+                            raise NotImplementedError(error_message)
                         kwargs[parameter] = None
                 # or skip running unsupported API calls
                 if not end_point_params:

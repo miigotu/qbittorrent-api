@@ -17,7 +17,7 @@ Implementation
         - Alternatively, if a parameter is malformatted, HTTP400 is returned
           with an error message.
           This raises a InvalidRequest400 error.
-    
+
     Unauthorized HTTP 401
         - This is only raised if XSS is detected or host header validation fails.
 
@@ -49,6 +49,7 @@ class Client(AppAPIMixIn,
              TorrentsAPIMixIn,
              RSSAPIMixIn,
              SearchAPIMixIn):
+
     """
     Initialize API for qBittorrent client.
 
@@ -61,22 +62,20 @@ class Client(AppAPIMixIn,
     :param username: user name for qBittorrent client
     :param password: password for qBittorrent client
 
-    Optional Configuration Arguments:
-    SIMPLE_RESPONSES: By default, complex objects are returned from some endpoints. These objects will allow for
-                      accessing responses' items as attributes and include methods for contextually relevant actions.
-                      This comes at the cost of performance. Generally, this cost isn't large; however, some
-                      endpoints, such as torrents_files() method, may need to convert a large payload.
-                      Set this to True to return the simple JSON back.
-                      Alternatively, set this to True only for an individual method call. For instance, when
-                      requesting the files for a torrent: client.torrents_files(hash='...', SIMPLE_RESPONSES=True).
-    VERIFY_WEBUI_CERTIFICATE: Set to False to skip verify certificate for HTTPS connections;
-                              for instance, if the connection is using a self-signed certificate.
-                              Not setting this to False for self-signed certs will cause a
-                              APIConnectionError exception to be raised.
-    RAISE_UNIMPLEMENTEDERROR_FOR_UNIMPLEMENTED_API_ENDPOINTS: Some Endpoints may not be implemented in older versions of
-                                                              qBittorrent. Setting this to True will raise a
-                                                              UnimplementedError instead of just returning None.
-    DISABLE_LOGGING_DEBUG_OUTPUT: Turn off debug output from logging for this package as well as Requests & urllib3.
+    :param SIMPLE_RESPONSES: By default, complex objects are returned from some endpoints. These objects will allow for
+        accessing responses' items as attributes and include methods for contextually relevant actions.
+        This comes at the cost of performance. Generally, this cost isn't large; however, some
+        endpoints, such as torrents_files() method, may need to convert a large payload.
+        Set this to True to return the simple JSON back.
+        Alternatively, set this to True only for an individual method call. For instance, when
+        requesting the files for a torrent: client.torrents_files(hash='...', SIMPLE_RESPONSES=True).
+    :param VERIFY_WEBUI_CERTIFICATE: Set to False to skip verify certificate for HTTPS connections;
+        for instance, if the connection is using a self-signed certificate. Not setting this to False for self-signed
+        certs will cause a APIConnectionError exception to be raised.
+    :param RAISE_UNIMPLEMENTEDERROR_FOR_UNIMPLEMENTED_API_ENDPOINTS: Some Endpoints may not be implemented in older
+        versions of qBittorrent. Setting this to True will raise a UnimplementedError instead of just returning None.
+    :param DISABLE_LOGGING_DEBUG_OUTPUT: Turn off debug output from logging for this package as well as Requests & urllib3.
     """
-    def __init__(self, host='', port=None, username='', password='', **kwargs):
+
+    def __init__(self, host='', port=None, username=None, password=None, **kwargs):
         super(Client, self).__init__(host=host, port=port, username=username, password=password, **kwargs)

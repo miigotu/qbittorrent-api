@@ -44,9 +44,11 @@ env:
 jobs:
   fast_finish: true
   allow_failures:
-    - python: pypy3
     - python: 3.9-dev
     - python: 3.10-dev
+    - python: pypy3
+  exclude:
+    - if: branch != comprehensive_tests AND env(QBT_VER) != env(LATEST_QBT_VERSION)
 env:
   - QBT_VER="4.1.0"
   - QBT_VER="4.1.1"
@@ -75,6 +77,7 @@ before_install:
   - pip install -U pytest
   - pip install -U pytest-cov
   - pip install codecov
+  - pip install coveralls
   # coverity
   - echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca
   # prepare to install qbittorrent things
@@ -92,6 +95,10 @@ before_install:
   - $QBT_PATH/bin/qbittorrent-nox --daemon
 install:
   - pip install .
-script: if [ "${COVERITY_SCAN_BRANCH}" != 1 ]; then pytest; fi
+script: |
+  if [ "${COVERITY_SCAN_BRANCH}" != 1 ]; then
+    pytest;
+  fi
 after_success:
   - codecov
+  - coveralls
