@@ -64,6 +64,7 @@ before_install:
   # prepare to install qbittorrent things
   - mkdir -p $HOME/deb
   - mkdir -p $HOME/Downloads  # default torrent download location
+  - rm -rf ~/.config/qBittorrent  # delete any existing qBittorrent profile
   - alias wget="wget --retry-connrefused --waitretry=1 --read-timeout=20 --timeout=15 -t 100"
   # install libtorrent-rasterbar
   - if [ ! -f $HOME/deb/libtorrent-rasterbar9_amd64.deb ]; then wget https://bit.ly/libtorrent-rasterbar9-1-1-1 -O $HOME/deb/libtorrent-rasterbar9_amd64.deb; fi

@@ -38,6 +38,10 @@ def test_add_move_refresh_remove_feed(client, api_version, client_func):
                 get_func(client, client_func[2])(item_path=item_two)  # rss_refresh_item
         else:
             get_func(client, client_func[2])(item_path=item_two)  # rss_refresh_item
+            # wait until the rss feed refresh is done
+            check(lambda: client.rss_items(), item_two, reverse=True)
+            check(lambda: client.rss_items(include_feed_data=True)[item_two], 'articles', reverse=True)
+            check(lambda: bool(client.rss_items(include_feed_data=True)[item_two]['articles']), True)
 
         items = get_func(client, client_func[3])(include_feed_data=True)  # rss_items
         assert isinstance(items, RSSitemsDictionary)
@@ -53,11 +57,9 @@ def test_add_move_refresh_remove_feed(client, api_version, client_func):
             with pytest.raises(NotImplementedError):
                 get_func(client, client_func[4])()  # rss_mark_as_read
         else:
-            check(lambda: client.rss_items(), item_two, reverse=True)
-            check(lambda: client.rss_items(include_feed_data=True)[item_two], 'articles', reverse=True)
             items = client.rss_items(include_feed_data=True)  # rss_items
-            if items[item_two]['articles']:
-                get_func(client, client_func[4])(item_path=item_two, article_id=items[item_two]['articles'][0])  # rss_mark_as_read
+            # if items[item_two]['articles']:
+            get_func(client, client_func[4])(item_path=item_two, article_id=items[item_two]['articles'][0])  # rss_mark_as_read
     finally:
         get_func(client, client_func[5])(item_path=item_two)  # rss_remove_item
         check(lambda: get_func(client, client_func[3])(), item_two, reverse=True, negate=True)  # rss_items
