@@ -123,6 +123,15 @@ def abort_if_qbittorrent_crashes(client):
         pytest.exit('qBittorrent crashed :(')
 
 
+@pytest.fixture(autouse=True)
+def abort_if_qbittorrent_crashes(client):
+    """Abort tests if qbittorrent disappears during testing"""
+    try:
+        _ = client.app.version
+    except APIConnectionError:
+        pytest.exit('qBittorrent crashed :(')
+
+
 @pytest.fixture(scope='session')
 def client():
     """qBittorrent Client for testing session"""

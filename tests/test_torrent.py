@@ -36,12 +36,13 @@ def test_state_enum(orig_torrent):
     assert orig_torrent.state_enum in TorrentStates
     assert orig_torrent.state_enum is not TorrentStates.UNKNOWN
     check(lambda: orig_torrent.state_enum.is_downloading, True)
+    # updated torrent.state_enum to always pull from qBittorrent, so it's not possible to spoof anymore
     # simulate an unknown torrent.state
-    orig_torrent.state = 'gibberish'
-    assert orig_torrent.state_enum is TorrentStates.UNKNOWN
+    # orig_torrent.state = 'gibberish'
+    # assert orig_torrent.state_enum is TorrentStates.UNKNOWN
     # restore torrent state
-    orig_torrent.sync_local()
-    check(lambda: orig_torrent.state_enum.is_downloading, True)
+    # orig_torrent.sync_local()
+    # check(lambda: orig_torrent.state_enum.is_downloading, True)
 
 
 def test_pause_resume(client, orig_torrent):
